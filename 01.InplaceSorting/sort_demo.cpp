@@ -54,5 +54,26 @@ int main()
         std::cout << "--------------------------------------------------------------\n";
     }
 
+    std::cout << "\nExplicit demo rows for the custom algorithms\n";
+    std::cout << "N\tAlgo\t\tComps\t\tSwaps\t\tMoves\n";
+    std::cout << "----------------------------------------------------------------\n";
+
+    for (size_t n : sizes)
+    {
+        auto number_data = generate_data(n);
+
+        shuffle_data(number_data);
+        CollInt::reset_stats();
+        bubble_sort(number_data.begin(), number_data.end());
+        std::cout << n << "\tbubble_sort\t" << CollInt::comps << "\t\t" << CollInt::swaps << "\t\t" << CollInt::moves << "\n";
+
+        shuffle_data(number_data);
+        CollInt::reset_stats();
+        quick_sort(number_data.begin(), number_data.end());
+        std::cout << n << "\tquick_sort\t" << CollInt::comps << "\t\t" << CollInt::swaps << "\t\t" << CollInt::moves << "\n";
+
+        std::cout << "--------------------------------------------------------------\n";
+    }
+
     return 0;
 }
