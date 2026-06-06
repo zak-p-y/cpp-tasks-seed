@@ -102,170 +102,192 @@ static std::string encode_alphabet =
 
 // TODO: implement this in C++
 std::vector<uint8_t> base85::encodeBytes(uint8_t &byte1, uint8_t &byte2,
-                                         uint8_t &byte3, uint8_t &byte4) {
+        uint8_t &byte3, uint8_t &byte4)
+{
 
-  uint32_t value = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | (byte4);
+    uint32_t value = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | (byte4);
 
-  uint8_t rem5 = value % 85;
-  value /= 85;
-  uint8_t rem4 = value % 85;
-  value /= 85;
-  uint8_t rem3 = value % 85;
-  value /= 85;
-  uint8_t rem2 = value % 85;
-  value /= 85;
-  uint8_t rem1 = value % 85;
-  return {rem5, rem4, rem3, rem2, rem1};
+    uint8_t rem5 = value % 85;
+    value /= 85;
+    uint8_t rem4 = value % 85;
+    value /= 85;
+    uint8_t rem3 = value % 85;
+    value /= 85;
+    uint8_t rem2 = value % 85;
+    value /= 85;
+    uint8_t rem1 = value % 85;
+    return {rem5, rem4, rem3, rem2, rem1};
 }
 
-std::vector<uint8_t> base85::encode(std::vector<uint8_t> const &bytes) {
+std::vector<uint8_t> base85::encode(std::vector<uint8_t> const &bytes)
+{
 
-  std::vector<uint8_t> encoded_bytes;
-  std::size_t remainder = bytes.size() % 4;
-  std::size_t div = bytes.size() / 4;
+    std::vector<uint8_t> encoded_bytes;
+    std::size_t remainder = bytes.size() % 4;
+    std::size_t div = bytes.size() / 4;
 
-  if (remainder == 0 && div == 0) {
+    if (remainder == 0 && div == 0)
+    {
+        return encoded_bytes;
+    }
+
+    if (div != 0)
+    {
+        for (uint8_t byte_index = 0; byte_index < bytes.size() - 3;
+                byte_index += 4)
+        {
+            uint8_t byte1 = bytes[byte_index];
+            uint8_t byte2 = bytes[byte_index + 1];
+            uint8_t byte3 = bytes[byte_index + 2];
+            uint8_t byte4 = bytes[byte_index + 3];
+
+            auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
+
+            for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend(); i++)
+            {
+                encoded_bytes.push_back(encode_alphabet[*i]);
+            }
+        }
+    }
+    if (remainder == 1)
+    {
+        uint8_t byte1 = *(bytes.end() - 1);
+        uint8_t byte2 = 0;
+        uint8_t byte3 = 0;
+        uint8_t byte4 = 0;
+        auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
+
+        for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 3; i++)
+        {
+            encoded_bytes.push_back(encode_alphabet[*i]);
+        }
+    }
+
+    if (remainder == 2)
+    {
+        uint8_t byte1 = *(bytes.end() - 2);
+        uint8_t byte2 = *(bytes.end() - 1);
+        uint8_t byte3 = 0;
+        uint8_t byte4 = 0;
+
+        auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
+
+        for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 2; i++)
+        {
+            encoded_bytes.push_back(encode_alphabet[*i]);
+        }
+    }
+
+    if (remainder == 3)
+    {
+        uint8_t byte1 = *(bytes.end() - 3);
+        uint8_t byte2 = *(bytes.end() - 2);
+        uint8_t byte3 = *(bytes.end() - 1);
+        uint8_t byte4 = 0;
+
+        auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
+
+        for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 1; i++)
+        {
+            encoded_bytes.push_back(encode_alphabet[*i]);
+        }
+    }
+
     return encoded_bytes;
-  }
-
-  if (div != 0) {
-    for (uint8_t byte_index = 0; byte_index < bytes.size() - 3;
-         byte_index += 4) {
-      uint8_t byte1 = bytes[byte_index];
-      uint8_t byte2 = bytes[byte_index + 1];
-      uint8_t byte3 = bytes[byte_index + 2];
-      uint8_t byte4 = bytes[byte_index + 3];
-
-      auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
-
-      for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend(); i++) {
-        encoded_bytes.push_back(encode_alphabet[*i]);
-      }
-    }
-  }
-  if (remainder == 1) {
-    uint8_t byte1 = *(bytes.end() - 1);
-    uint8_t byte2 = 0;
-    uint8_t byte3 = 0;
-    uint8_t byte4 = 0;
-    auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
-
-    for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 3; i++) {
-      encoded_bytes.push_back(encode_alphabet[*i]);
-    }
-  }
-
-  if (remainder == 2) {
-    uint8_t byte1 = *(bytes.end() - 2);
-    uint8_t byte2 = *(bytes.end() - 1);
-    uint8_t byte3 = 0;
-    uint8_t byte4 = 0;
-
-    auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
-
-    for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 2; i++) {
-      encoded_bytes.push_back(encode_alphabet[*i]);
-    }
-  }
-
-  if (remainder == 3) {
-    uint8_t byte1 = *(bytes.end() - 3);
-    uint8_t byte2 = *(bytes.end() - 2);
-    uint8_t byte3 = *(bytes.end() - 1);
-    uint8_t byte4 = 0;
-
-    auto bytesToInsert = encodeBytes(byte1, byte2, byte3, byte4);
-
-    for (auto i = bytesToInsert.rbegin(); i != bytesToInsert.rend() - 1; i++) {
-      encoded_bytes.push_back(encode_alphabet[*i]);
-    }
-  }
-
-  return encoded_bytes;
 }
 
 std::vector<uint8_t> base85::decodeChars(uint8_t &char1, uint8_t &char2,
-                                         uint8_t &char3, uint8_t &char4,
-                                         uint8_t &char5) {
-  uint32_t number = char1 * 85 * 85 * 85 * 85 + char2 * 85 * 85 * 85 +
-                    char3 * 85 * 85 + char4 * 85 + char5;
+        uint8_t &char3, uint8_t &char4,
+        uint8_t &char5)
+{
+    uint32_t number = char1 * 85 * 85 * 85 * 85 + char2 * 85 * 85 * 85 +
+                      char3 * 85 * 85 + char4 * 85 + char5;
 
-  uint8_t byte1 = (number >> 24) & 0xFF;
-  uint8_t byte2 = (number >> 16) & 0xFF;
-  uint8_t byte3 = (number >> 8) & 0xFF;
-  uint8_t byte4 = number & 0xFF;
+    uint8_t byte1 = (number >> 24) & 0xFF;
+    uint8_t byte2 = (number >> 16) & 0xFF;
+    uint8_t byte3 = (number >> 8) & 0xFF;
+    uint8_t byte4 = number & 0xFF;
 
-  return {byte1, byte2, byte3, byte4};
+    return {byte1, byte2, byte3, byte4};
 }
 
 // TODO: implement this in C++
-std::vector<uint8_t> base85::decode(std::vector<uint8_t> const &b85str) {
-  std::size_t div = b85str.size() / 5;
-  std::size_t remainder = b85str.size() % 5;
+std::vector<uint8_t> base85::decode(std::vector<uint8_t> const &b85str)
+{
+    std::size_t div = b85str.size() / 5;
+    std::size_t remainder = b85str.size() % 5;
 
-  std::array<uint8_t, 256> decode_alphabet;
+    std::array<uint8_t, 256> decode_alphabet;
 
-  for (std::size_t i = 0; i < 85; i++) {
-    decode_alphabet[encode_alphabet[i]] = i;
-  }
-
-  std::vector<uint8_t> decodedBytes;
-
-  if (div != 0) {
-    for (std::size_t vectorIndex = 0; vectorIndex + 4 < b85str.size();
-         vectorIndex += 5) {
-      uint8_t char1 = decode_alphabet[b85str[vectorIndex]];
-      uint8_t char2 = decode_alphabet[b85str[vectorIndex + 1]];
-      uint8_t char3 = decode_alphabet[b85str[vectorIndex + 2]];
-      uint8_t char4 = decode_alphabet[b85str[vectorIndex + 3]];
-      uint8_t char5 = decode_alphabet[b85str[vectorIndex + 4]];
-
-      std::vector<uint8_t> bytesToAdd =
-          decodeChars(char1, char2, char3, char4, char5);
-      decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
-                          bytesToAdd.end());
+    for (std::size_t i = 0; i < 85; i++)
+    {
+        decode_alphabet[encode_alphabet[i]] = i;
     }
-  }
-  if (remainder == 4) {
-    uint8_t char1 = decode_alphabet[*(b85str.end() - 4)];
-    uint8_t char2 = decode_alphabet[*(b85str.end() - 3)];
-    uint8_t char3 = decode_alphabet[*(b85str.end() - 2)];
-    uint8_t char4 = decode_alphabet[*(b85str.end() - 1)];
-    uint8_t char5 = decode_alphabet['~']; // pass last element of alphabet
 
-    std::vector<uint8_t> bytesToAdd =
-        decodeChars(char1, char2, char3, char4, char5);
+    std::vector<uint8_t> decodedBytes;
 
-    decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
-                        bytesToAdd.end() - 1);
-  }
-  if (remainder == 3) {
-    uint8_t char1 = decode_alphabet[*(b85str.end() - 3)];
-    uint8_t char2 = decode_alphabet[*(b85str.end() - 2)];
-    uint8_t char3 = decode_alphabet[*(b85str.end() - 1)];
-    uint8_t char4 = decode_alphabet['~'];
-    uint8_t char5 = decode_alphabet['~'];
+    if (div != 0)
+    {
+        for (std::size_t vectorIndex = 0; vectorIndex + 4 < b85str.size();
+                vectorIndex += 5)
+        {
+            uint8_t char1 = decode_alphabet[b85str[vectorIndex]];
+            uint8_t char2 = decode_alphabet[b85str[vectorIndex + 1]];
+            uint8_t char3 = decode_alphabet[b85str[vectorIndex + 2]];
+            uint8_t char4 = decode_alphabet[b85str[vectorIndex + 3]];
+            uint8_t char5 = decode_alphabet[b85str[vectorIndex + 4]];
 
-    std::vector<uint8_t> bytesToAdd =
-        decodeChars(char1, char2, char3, char4, char5);
-    decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
-                        bytesToAdd.end() - 2);
-  }
+            std::vector<uint8_t> bytesToAdd =
+                decodeChars(char1, char2, char3, char4, char5);
+            decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
+                                bytesToAdd.end());
+        }
+    }
+    if (remainder == 4)
+    {
+        uint8_t char1 = decode_alphabet[*(b85str.end() - 4)];
+        uint8_t char2 = decode_alphabet[*(b85str.end() - 3)];
+        uint8_t char3 = decode_alphabet[*(b85str.end() - 2)];
+        uint8_t char4 = decode_alphabet[*(b85str.end() - 1)];
+        uint8_t char5 = decode_alphabet['~']; // pass last element of alphabet
 
-  if (remainder == 2) {
-    uint8_t char1 = decode_alphabet[*(b85str.end() - 2)];
-    uint8_t char2 = decode_alphabet[*(b85str.end() - 1)];
-    uint8_t char3 = decode_alphabet['~'];
-    uint8_t char4 = decode_alphabet['~'];
-    uint8_t char5 = decode_alphabet['~'];
+        std::vector<uint8_t> bytesToAdd =
+            decodeChars(char1, char2, char3, char4, char5);
 
-    std::vector<uint8_t> bytesToAdd =
-        decodeChars(char1, char2, char3, char4, char5);
-    decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
-                        bytesToAdd.end() - 3);
-  }
-  if (remainder == 1) {
-    std::cerr << "Invalid input";
-  }
-  return decodedBytes;
+        decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
+                            bytesToAdd.end() - 1);
+    }
+    if (remainder == 3)
+    {
+        uint8_t char1 = decode_alphabet[*(b85str.end() - 3)];
+        uint8_t char2 = decode_alphabet[*(b85str.end() - 2)];
+        uint8_t char3 = decode_alphabet[*(b85str.end() - 1)];
+        uint8_t char4 = decode_alphabet['~'];
+        uint8_t char5 = decode_alphabet['~'];
+
+        std::vector<uint8_t> bytesToAdd =
+            decodeChars(char1, char2, char3, char4, char5);
+        decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
+                            bytesToAdd.end() - 2);
+    }
+
+    if (remainder == 2)
+    {
+        uint8_t char1 = decode_alphabet[*(b85str.end() - 2)];
+        uint8_t char2 = decode_alphabet[*(b85str.end() - 1)];
+        uint8_t char3 = decode_alphabet['~'];
+        uint8_t char4 = decode_alphabet['~'];
+        uint8_t char5 = decode_alphabet['~'];
+
+        std::vector<uint8_t> bytesToAdd =
+            decodeChars(char1, char2, char3, char4, char5);
+        decodedBytes.insert(decodedBytes.end(), bytesToAdd.begin(),
+                            bytesToAdd.end() - 3);
+    }
+    if (remainder == 1)
+    {
+        std::cerr << "Invalid input";
+    }
+    return decodedBytes;
 }
+

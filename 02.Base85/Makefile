@@ -14,6 +14,8 @@ utest   : base85ed_test.d.o base85ed.d.o
 run_utest : utest
 	./$^
 
+test : run_utest
+
 run_itest : release
 	echo "Integration tests..."
 	./integration_test.sh

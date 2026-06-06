@@ -14,7 +14,7 @@ TEST(BubbleSort, SameVector)
     std::vector<int> data = {1, 2, 3, 4, 5};
     bubble_sort(data.begin(), data.end());
     EXPECT_TRUE(std::is_sorted(data.begin(), data.end()));
-    EXPECT_EQ((std::vector<int>{1, 2, 3, 4, 5}), data);
+    EXPECT_EQ((std::vector<int> {1, 2, 3, 4, 5}), data);
 }
 
 TEST(BubbleSort, HandlesDuplicates)
@@ -22,7 +22,7 @@ TEST(BubbleSort, HandlesDuplicates)
     std::vector<int> data = {3, 1, 2, 3, 1, 2};
     bubble_sort(data.begin(), data.end());
     EXPECT_TRUE(std::is_sorted(data.begin(), data.end()));
-    EXPECT_EQ((std::vector<int>{1, 1, 2, 2, 3, 3}), data);
+    EXPECT_EQ((std::vector<int> {1, 1, 2, 2, 3, 3}), data);
 }
 
 TEST(BubbleSort, EmptyAndSingleElement)
@@ -34,7 +34,7 @@ TEST(BubbleSort, EmptyAndSingleElement)
     std::vector<int> single = {42};
     bubble_sort(single.begin(), single.end());
     EXPECT_TRUE(std::is_sorted(single.begin(), single.end()));
-    EXPECT_EQ((std::vector<int>{42}), single);
+    EXPECT_EQ((std::vector<int> {42}), single);
 }
 
 
@@ -46,7 +46,7 @@ TEST(QuickSort, SameVector)
     std::vector<int> data = {1, 2, 3, 4, 5};
     quick_sort(data.begin(), data.end());
     EXPECT_TRUE(std::is_sorted(data.begin(), data.end()));
-    EXPECT_EQ((std::vector<int>{1, 2, 3, 4, 5}), data);
+    EXPECT_EQ((std::vector<int> {1, 2, 3, 4, 5}), data);
 }
 
 TEST(QuickSort, HandlesDuplicates)
@@ -54,7 +54,7 @@ TEST(QuickSort, HandlesDuplicates)
     std::vector<int> data = {3, 1, 2, 3, 1, 2};
     quick_sort(data.begin(), data.end());
     EXPECT_TRUE(std::is_sorted(data.begin(), data.end()));
-    EXPECT_EQ((std::vector<int>{1, 1, 2, 2, 3, 3}), data);
+    EXPECT_EQ((std::vector<int> {1, 1, 2, 2, 3, 3}), data);
 }
 
 TEST(QuickSort, EmptyAndSingleElement)
@@ -66,5 +66,5 @@ TEST(QuickSort, EmptyAndSingleElement)
     std::vector<int> single = {42};
     quick_sort(single.begin(), single.end());
     EXPECT_TRUE(std::is_sorted(single.begin(), single.end()));
-    EXPECT_EQ((std::vector<int>{42}), single);
+    EXPECT_EQ((std::vector<int> {42}), single);
 }

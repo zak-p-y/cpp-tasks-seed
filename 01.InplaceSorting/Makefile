@@ -12,6 +12,8 @@ utest   : sort_test.d.o
 run_utest : utest
 	./$^
 
+test : run_utest
+
 run_itest : debug
 	echo "Integration tests..."
 	./$^
