@@ -133,7 +133,7 @@ std::vector<uint8_t> base85::encode(std::vector<uint8_t> const &bytes)
 
     if (div != 0)
     {
-        for (uint8_t byte_index = 0; byte_index < bytes.size() - 3;
+        for (std::size_t byte_index = 0; byte_index < bytes.size() - 3;
                 byte_index += 4)
         {
             uint8_t byte1 = bytes[byte_index];
@@ -290,4 +290,3 @@ std::vector<uint8_t> base85::decode(std::vector<uint8_t> const &b85str)
     }
     return decodedBytes;
 }
-
