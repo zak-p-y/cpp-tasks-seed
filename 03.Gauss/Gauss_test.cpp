@@ -53,14 +53,6 @@ std::string make_temp_file(const std::string &content)
     return std::string(path);
 }
 
-void expect_vector_near(const GaussVector &actual, const std::vector<double> &expected, double eps = 1e-9)
-{
-    ASSERT_EQ(actual.size(), static_cast<int>(expected.size()));
-    for (int i = 0; i < actual.size(); ++i)
-    {
-        EXPECT_NEAR(actual(i), expected[static_cast<std::size_t>(i)], eps);
-    }
-}
 } // namespace
 
 TEST(GaussUtil, LoadCsvSkipsHeader)
@@ -101,26 +93,30 @@ TEST(GaussUtil, PrintVectorAsCsv)
 
 TEST(GaussSolve, SmallSolve)
 {
-    GaussMatrix ab = make_matrix(
-    {
-        {2.0, 1.0, 5.0},
-        {1.0, -1.0, 1.0},
-    });
-
+    GaussMatrix ab(2, 3);
+    ab(0, 0) = 2.0;
+    ab(0, 1) = 1.0;
+    ab(0, 2) = 5.0;
+    ab(1, 0) = 1.0;
+    ab(1, 1) = -1.0;
+    ab(1, 2) = 1.0;
     const GaussVector x = Gauss_solve(ab);
-    expect_vector_near(x, {2.0, 1.0});
+    EXPECT_NEAR(x(0), 2.0, 1e-9);
+    EXPECT_NEAR(x(1), 1.0, 1e-9);
 }
 
 TEST(GaussSolve, RequiresPivoting)
 {
-    GaussMatrix ab = make_matrix(
-    {
-        {0.0, 1.0, 1.0},
-        {2.0, 3.0, 5.0},
-    });
-
+    GaussMatrix ab(2, 3);
+    ab(0, 0) = 0.0;
+    ab(0, 1) = 1.0;
+    ab(0, 2) = 1.0;
+    ab(1, 0) = 2.0;
+    ab(1, 1) = 3.0;
+    ab(1, 2) = 5.0;
     const GaussVector x = Gauss_solve(ab);
-    expect_vector_near(x, {1.0, 1.0});
+    EXPECT_NEAR(x(0), 1.0, 1e-9);
+    EXPECT_NEAR(x(1), 1.0, 1e-9);
 }
 
 TEST(GaussSolve, SingularMatrixThrows)
@@ -178,5 +174,9 @@ TEST(GaussSolve, RandomDominantSystemIsSolved)
     }
 
     const GaussVector x = Gauss_solve(ab);
-    expect_vector_near(x, expected, 1e-8);
+    ASSERT_EQ(x.size(), n);
+    for (int i = 0; i < n; ++i)
+    {
+        EXPECT_NEAR(x(i), expected[static_cast<std::size_t>(i)], 1e-8);
+    }
 }

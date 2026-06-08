@@ -16,14 +16,14 @@ GaussVector Gauss_solve(GaussMatrix &ab)
         throw std::invalid_argument("augmented matrix must have n rows and n+1 columns");
     }
 
-    const int n = ab.rows();
+    const Eigen::Index n = ab.rows();
     GaussVector x(n);
 
-    for (int pivot_col = 0; pivot_col < n; ++pivot_col)
+    for (Eigen::Index pivot_col = 0; pivot_col < n; ++pivot_col)
     {
-        int pivot_row = pivot_col;
+        Eigen::Index pivot_row = pivot_col;
         double pivot_abs = std::abs(ab(pivot_row, pivot_col));
-        for (int row = pivot_col + 1; row < n; ++row)
+        for (Eigen::Index row = pivot_col + 1; row < n; ++row)
         {
             const double candidate_abs = std::abs(ab(row, pivot_col));
             if (candidate_abs > pivot_abs)
@@ -38,9 +38,15 @@ GaussVector Gauss_solve(GaussMatrix &ab)
             throw std::runtime_error("singular matrix");
         }
 
-        ab.swap_rows(pivot_col, pivot_row);
+        if (pivot_row != pivot_col)
+        {
+            for (Eigen::Index col = 0; col < ab.cols(); ++col)
+            {
+                std::swap(ab(pivot_col, col), ab(pivot_row, col));
+            }
+        }
 
-        for (int row = pivot_col + 1; row < n; ++row)
+        for (Eigen::Index row = pivot_col + 1; row < n; ++row)
         {
             const double pivot = ab(pivot_col, pivot_col);
             const double factor = ab(row, pivot_col) / pivot;
@@ -50,15 +56,18 @@ GaussVector Gauss_solve(GaussMatrix &ab)
                 continue;
             }
 
-            ab.row(row) -= factor * ab.row(pivot_col);
+            for (Eigen::Index col = pivot_col + 1; col <= n; ++col)
+            {
+                ab(row, col) -= factor * ab(pivot_col, col);
+            }
             ab(row, pivot_col) = 0.0;
         }
     }
 
-    for (int row = n - 1; row >= 0; --row)
+    for (Eigen::Index row = n; row-- > 0;)
     {
         double rhs = ab(row, n);
-        for (int col = row + 1; col < n; ++col)
+        for (Eigen::Index col = row + 1; col < n; ++col)
         {
             rhs -= ab(row, col) * x(col);
         }
